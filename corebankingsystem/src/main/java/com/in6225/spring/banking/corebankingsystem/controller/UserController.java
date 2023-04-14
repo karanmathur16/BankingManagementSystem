@@ -1,6 +1,7 @@
 package com.in6225.spring.banking.corebankingsystem.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.in6225.spring.banking.corebankingsystem.controller.request.LoginRequest;
 import com.in6225.spring.banking.corebankingsystem.entities.Users;
 import com.in6225.spring.banking.corebankingsystem.services.impl.UserServiceImpl;
 
@@ -46,8 +48,15 @@ public class UserController {
 	
 	@SuppressWarnings("rawtypes")
 	@PostMapping("/login")
-	public ResponseEntity Login(@RequestBody String username, String password){
-		return ResponseEntity.ok(userservice.Login(username,password));
+	public ResponseEntity Login(@RequestBody LoginRequest request){
+		String username = request.getUsername();
+		String password = request.getPassword();
+		String response = userservice.Login(username,password);
+		if(response.equals("Success")) {
+			return ResponseEntity.ok("Success");
+		}
+		else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+    	
 	}
 
 
