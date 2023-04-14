@@ -43,6 +43,12 @@ public class UserController {
 	public ResponseEntity updateUser(@RequestBody Users user){
 		return ResponseEntity.ok(userservice.updateUser(user));
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@PostMapping("/login")
+	public ResponseEntity Login(@RequestBody String username, String password){
+		return ResponseEntity.ok(userservice.Login(username,password));
+	}
 
 
 }
