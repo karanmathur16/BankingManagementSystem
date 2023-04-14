@@ -1,5 +1,6 @@
 package com.in6225.spring.banking.corebankingsystem.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.in6225.spring.banking.corebankingsystem.controller.request.FundsTransferRequest;
@@ -11,4 +12,6 @@ public interface TransactionsService {
 	FundTransferResponse fundsTransfer(FundsTransferRequest fundsTransferRequest);
 	List<TransactionsDTO> getTransaction(String transactionid);
 	List<TransactionsDTO> findall(AccountsDTO account);
+	TransactionsDTO deposit(BigDecimal amount);
+	TransactionsDTO withdraw(BigDecimal amount);
 }
