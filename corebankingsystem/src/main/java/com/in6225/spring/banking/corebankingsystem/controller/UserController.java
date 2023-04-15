@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.in6225.spring.banking.corebankingsystem.controller.request.LoginRequest;
+import com.in6225.spring.banking.corebankingsystem.dto.UsersDTO;
 import com.in6225.spring.banking.corebankingsystem.entities.Users;
 import com.in6225.spring.banking.corebankingsystem.services.impl.UserServiceImpl;
 
@@ -51,9 +52,9 @@ public class UserController {
 	public ResponseEntity Login(@RequestBody LoginRequest request){
 		String username = request.getUsername();
 		String password = request.getPassword();
-		String response = userservice.Login(username,password);
-		if(response.equals("Success")) {
-			return ResponseEntity.ok("Success");
+		UsersDTO response = userservice.Login(username,password);
+		if(response.getEmail() != null) {
+			return ResponseEntity.ok(response);
 		}
 		else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     	

@@ -44,13 +44,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String Login(String username, String password) {
+	public UsersDTO Login(String username, String password) {
 		Users user = userrepo.findByusername(username).get();
 		if(user.getPassword().equals(password)) {
-			return "Success";
+			return (usermapper.convertToDto(user));
 		}
 	
-		else return "Unauthorized";
+		else return null;
 	}
 	
 	

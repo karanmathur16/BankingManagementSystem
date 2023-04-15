@@ -10,5 +10,5 @@ public interface UserService {
 	UsersDTO getUser(Long id);
 	UsersDTO updateUser(Users user);
 	UsersDTO createUser(Users user);
-	String Login(String username,String password);
+	UsersDTO Login(String username,String password);
 }

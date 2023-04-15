@@ -94,6 +94,40 @@ public class TransactionServiceImpl implements TransactionsService {
 		return(tranmapper.convertToDtoList(transactionsList));
 	}
 	
+	@Override
+	public TransactionsDTO deposit(String accountNumber, BigDecimal amount) {
+		Accounts accountentity = accountsrepo.findByAccountNumber(accountNumber).get();
+		accountentity.setAvailableBalance(accountentity.getAvailableBalance().add(amount));
+		Transactions tran1 = new Transactions();
+		String transactionId = UUID.randomUUID().toString();
+        tran1.setAccount(accountentity);
+        tran1.setAmount(amount);
+        tran1.setTransactionDateTime(LocalDateTime.now());
+        tran1.setTransactionNumber(transactionId);
+        tran1.setTransactionType(TransactionType.CREDIT);
+        transactionrepo.save(tran1);
+		return (tranmapper.convertToDto(tran1));
+	}
+
+	@Override
+	public TransactionsDTO withdraw(String accountNumber, BigDecimal amount) {
+		Accounts accountentity = accountsrepo.findByAccountNumber(accountNumber).get();
+		AccountsDTO accountdto = accountmapper.convertToDto(accountentity);
+		
+		validateBalance(accountdto, amount);
+		
+		accountentity.setAvailableBalance(accountentity.getAvailableBalance().subtract(amount));
+		Transactions tran1 = new Transactions();
+		String transactionId = UUID.randomUUID().toString();
+        tran1.setAccount(accountentity);
+        tran1.setAmount(amount.negate());
+        tran1.setTransactionDateTime(LocalDateTime.now());
+        tran1.setTransactionNumber(transactionId);
+        tran1.setTransactionType(TransactionType.DEBIT);
+        transactionrepo.save(tran1);
+		return (tranmapper.convertToDto(tran1));
+	}
+
 	private void validateBalance(AccountsDTO bankAccount, BigDecimal amount) {
         if (bankAccount.getAvailableBalance().compareTo(BigDecimal.ZERO) < 0 || bankAccount.getAvailableBalance().compareTo(amount) < 0) {
             throw new RuntimeException("Not enough funds to transfer");
