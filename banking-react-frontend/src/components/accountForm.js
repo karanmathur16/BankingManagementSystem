@@ -8,8 +8,8 @@ class AccountForm extends React.Component {
     amount: "",
     editAccount: false,
     accountNumber: "",
-    fromAccount:"",
-    toAccount:"",
+    fromAccount: "",
+    toAccount: "",
     ifsc: "",
     errorMsg: "",
     successMsg: "",
@@ -50,7 +50,7 @@ class AccountForm extends React.Component {
       this.setState({
         amount: "",
         successMsg: {
-            withdraw_success:"Amount withdrawn successfully."
+          withdraw_success: "Amount withdrawn successfully.",
         },
       });
     } else {
@@ -80,7 +80,7 @@ class AccountForm extends React.Component {
       this.setState({
         amount: "",
         successMsg: {
-            deposit_success:"Amount deposited successfully."
+          deposit_success: "Amount deposited successfully.",
         },
       });
     } else {
@@ -93,7 +93,7 @@ class AccountForm extends React.Component {
   };
 
   handleTransfer = async () => {
-    const { fromAccount,toAccount, amount } = this.state;
+    const { fromAccount, toAccount, amount } = this.state;
     const response = await fetch(
       "http://localhost:8080/api/v1/transactions/fund-transfer",
       {
@@ -101,7 +101,7 @@ class AccountForm extends React.Component {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ fromAccount,toAccount, amount }),
+        body: JSON.stringify({ fromAccount, toAccount, amount }),
       }
     );
     let data = await response.json();
@@ -110,7 +110,8 @@ class AccountForm extends React.Component {
       this.setState({
         amount: "",
         successMsg: {
-            transfer_success:data.message + " with TransactionId: " + data.transactionId
+          transfer_success:
+            data.message + " with TransactionId: " + data.transactionId,
         },
       });
     } else {
@@ -123,7 +124,14 @@ class AccountForm extends React.Component {
   };
 
   handleAmountChange = (event) => {
-    this.setState({ amount: event.target.value });
+    let numericValue = event.target.value;
+    if (isNaN(numericValue) || numericValue < 0) {
+      this.setState({
+        errorMsg: {
+          deposit_error: "Invalid Amount Entered",
+        },
+      });
+    } else this.setState({ amount: numericValue });
   };
 
   handleAccountChange = (event) => {
@@ -157,7 +165,7 @@ class AccountForm extends React.Component {
     if (selectedType === "withdraw") {
       this.handleWithdraw();
     } else if (selectedType === "transfer") {
-        this.handleTransfer();
+      this.handleTransfer();
     } else if (selectedType === "statement") {
     } else {
       this.handleDeposit();
@@ -166,17 +174,20 @@ class AccountForm extends React.Component {
 
   render() {
     const { selectedType } = this.props;
-    const { errorMsg, accountNumber, successMsg,fromAccount,toAccount } = this.state;
+    const { errorMsg, accountNumber, successMsg, fromAccount, toAccount } =
+      this.state;
     const type = selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
-    let transferFunds = true ? selectedType === "transfer" : false
+    let transferFunds = true ? selectedType === "transfer" : false;
 
     return transferFunds ? (
-      <div className="account-form" >
-         {successMsg && successMsg.transfer_success && <p className="successMsg">{successMsg.transfer_success}</p>}
-         {errorMsg && errorMsg.transfer_error && (
+      <div className="account-form">
+        {successMsg && successMsg.transfer_success && (
+          <p className="successMsg">{successMsg.transfer_success}</p>
+        )}
+        {errorMsg && errorMsg.transfer_error && (
           <p className="errorMsg">{errorMsg.transfer_error}</p>
         )}
-       <Form className="account-form">
+        <Form className="account-form">
           <Form.Group controlId="type">
             <Form.Label>{type}</Form.Label>
           </Form.Group>
@@ -215,8 +226,12 @@ class AccountForm extends React.Component {
       </div>
     ) : (
       <div className="account-form">
-        {successMsg && successMsg.withdraw_success &&<p className="successMsg">{successMsg.withdraw_success}</p>}
-        {successMsg && successMsg.deposit_success && <p className="successMsg">{successMsg.deposit_success}</p>}
+        {successMsg && successMsg.withdraw_success && (
+          <p className="successMsg">{successMsg.withdraw_success}</p>
+        )}
+        {successMsg && successMsg.deposit_success && (
+          <p className="successMsg">{successMsg.deposit_success}</p>
+        )}
         {errorMsg && errorMsg.withdraw_error && (
           <p className="errorMsg">{errorMsg.withdraw_error}</p>
         )}
@@ -232,6 +247,7 @@ class AccountForm extends React.Component {
             <Form.Label>Account number: </Form.Label>
             <Form.Control
               type="text"
+              required
               placeholder={`Enter Account Number`}
               value={accountNumber}
               onChange={this.handleAccountChange}
@@ -241,6 +257,8 @@ class AccountForm extends React.Component {
             <Form.Label>Amount:</Form.Label>
             <Form.Control
               type="number"
+              min="0"
+              required
               placeholder={`Enter amount to ${selectedType}`}
               value={this.state.amount}
               onChange={this.handleAmountChange}

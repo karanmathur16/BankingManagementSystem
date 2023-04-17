@@ -53,7 +53,7 @@ public class UserController {
 		String username = request.getUsername();
 		String password = request.getPassword();
 		UsersDTO response = userservice.Login(username,password);
-		if(response.getEmail() != null) {
+		if(response != null) {
 			return ResponseEntity.ok(response);
 		}
 		else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
