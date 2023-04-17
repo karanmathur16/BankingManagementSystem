@@ -10,5 +10,6 @@ public class FundsTransferRequest {
 	private String fromAccount;
 	private String toAccount;
 	private BigDecimal amount;
+	private String userId;
 
 }

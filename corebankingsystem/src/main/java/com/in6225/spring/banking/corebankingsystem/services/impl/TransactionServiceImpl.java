@@ -13,12 +13,14 @@ import com.in6225.spring.banking.corebankingsystem.controller.request.FundsTrans
 import com.in6225.spring.banking.corebankingsystem.controller.response.FundTransferResponse;
 import com.in6225.spring.banking.corebankingsystem.dto.AccountsDTO;
 import com.in6225.spring.banking.corebankingsystem.dto.TransactionsDTO;
+import com.in6225.spring.banking.corebankingsystem.dto.UsersDTO;
 import com.in6225.spring.banking.corebankingsystem.entities.Accounts;
 import com.in6225.spring.banking.corebankingsystem.entities.Transactions;
 import com.in6225.spring.banking.corebankingsystem.mapper.AccountsMapping;
 import com.in6225.spring.banking.corebankingsystem.mapper.TransactionsMapping;
 import com.in6225.spring.banking.corebankingsystem.repos.AccountsRepository;
 import com.in6225.spring.banking.corebankingsystem.repos.TransactionsRepository;
+import com.in6225.spring.banking.corebankingsystem.repos.UserRepository;
 import com.in6225.spring.banking.corebankingsystem.services.TransactionsService;
 
 import jakarta.transaction.Transactional;
@@ -33,6 +35,8 @@ public class TransactionServiceImpl implements TransactionsService {
     private TransactionsRepository transactionrepo;
 	@Autowired
 	private AccountsRepository accountsrepo;	
+	@Autowired
+	private UserServiceImpl userservice;;
 	
 	private TransactionsMapping tranmapper = new TransactionsMapping();
 	private AccountsMapping accountmapper = new AccountsMapping();
@@ -42,7 +46,10 @@ public class TransactionServiceImpl implements TransactionsService {
 		
 		AccountsDTO fromBankAccount = accountService.getAccount(fundsTransferRequest.getFromAccount());
         AccountsDTO toBankAccount = accountService.getAccount(fundsTransferRequest.getToAccount());
-
+        long user_id = Long.parseLong(fundsTransferRequest.getUserId());
+        UsersDTO user = userservice.getUser(user_id);
+        
+        validateFromAccount(fromBankAccount, user);
         validateBalance(fromBankAccount, fundsTransferRequest.getAmount());
 
         String transactionId = UUID.randomUUID().toString();
@@ -95,8 +102,13 @@ public class TransactionServiceImpl implements TransactionsService {
 	}
 	
 	@Override
-	public TransactionsDTO deposit(String accountNumber, BigDecimal amount) {
+	public TransactionsDTO deposit(String accountNumber, BigDecimal amount,String user_id) {
 		Accounts accountentity = accountsrepo.findByAccountNumber(accountNumber).get();
+		AccountsDTO fromBankAccount = accountmapper.convertToDto(accountentity);
+		long user_id_long = Long.parseLong(user_id);
+        UsersDTO user = userservice.getUser(user_id_long);
+        
+        validateFromAccount(fromBankAccount, user);
 		accountentity.setAvailableBalance(accountentity.getAvailableBalance().add(amount));
 		Transactions tran1 = new Transactions();
 		String transactionId = UUID.randomUUID().toString();
@@ -110,10 +122,13 @@ public class TransactionServiceImpl implements TransactionsService {
 	}
 
 	@Override
-	public TransactionsDTO withdraw(String accountNumber, BigDecimal amount) {
+	public TransactionsDTO withdraw(String accountNumber, BigDecimal amount,String user_id) {
 		Accounts accountentity = accountsrepo.findByAccountNumber(accountNumber).get();
 		AccountsDTO accountdto = accountmapper.convertToDto(accountentity);
-		
+		long user_id_long = Long.parseLong(user_id);
+        UsersDTO user = userservice.getUser(user_id_long);
+        
+        validateFromAccount(accountdto, user);
 		validateBalance(accountdto, amount);
 		
 		accountentity.setAvailableBalance(accountentity.getAvailableBalance().subtract(amount));
@@ -133,5 +148,12 @@ public class TransactionServiceImpl implements TransactionsService {
             throw new RuntimeException("Not enough funds to transfer");
         }
     }
+	
+	private void validateFromAccount(AccountsDTO bankAccount, UsersDTO user) {
+		List<AccountsDTO> userAccounts = accountService.findall(user);
+		if(!userAccounts.contains(bankAccount)) {
+			throw new RuntimeException("Not a user bank account");
+		}
+	}
 
 }

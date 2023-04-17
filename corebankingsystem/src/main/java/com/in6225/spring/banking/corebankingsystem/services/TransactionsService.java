@@ -12,6 +12,6 @@ public interface TransactionsService {
 	FundTransferResponse fundsTransfer(FundsTransferRequest fundsTransferRequest);
 	List<TransactionsDTO> getTransaction(String transactionid);
 	List<TransactionsDTO> findall(AccountsDTO account);
-	TransactionsDTO deposit(String accountNumber, BigDecimal amount);
-	TransactionsDTO withdraw(String accountNumber, BigDecimal amount);
+	TransactionsDTO deposit(String accountNumber, BigDecimal amount, String userId);
+	TransactionsDTO withdraw(String accountNumber, BigDecimal amount, String userId);
 }
