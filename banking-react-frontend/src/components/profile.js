@@ -155,7 +155,7 @@ class Profile extends React.Component {
           </div>
           <div>
           {selectedType === 'withdraw' || selectedType === 'deposit' || selectedType === 'statement' || selectedType === 'transfer' ? (
-            <AccountForm selectedType={selectedType} />
+            <AccountForm selectedType={selectedType} accounts={accounts}/>
           ) : (
             null
           )}

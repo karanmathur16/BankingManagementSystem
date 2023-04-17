@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Dropdown } from "react-bootstrap";
 import { connect } from "react-redux";
 import { validateFields } from "../utils/common";
 
@@ -13,6 +13,7 @@ class AccountForm extends React.Component {
     ifsc: "",
     errorMsg: "",
     successMsg: "",
+    userId:""
   };
 
   handleUpdateAccount = (ifsc) => {
@@ -34,6 +35,7 @@ class AccountForm extends React.Component {
 
   handleWithdraw = async () => {
     const { accountNumber, amount } = this.state;
+    const userid = localStorage.getItem("user_id");
     const response = await fetch(
       "http://localhost:8080/api/v1/transactions/withdraw",
       {
@@ -41,7 +43,7 @@ class AccountForm extends React.Component {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ accountNumber, amount }),
+        body: JSON.stringify({ accountNumber, amount,userId:userid }),
       }
     );
     let data = await response.json();
@@ -64,6 +66,7 @@ class AccountForm extends React.Component {
 
   handleDeposit = async () => {
     const { accountNumber, amount } = this.state;
+    const userid = localStorage.getItem("user_id");
     const response = await fetch(
       "http://localhost:8080/api/v1/transactions/deposit",
       {
@@ -71,7 +74,7 @@ class AccountForm extends React.Component {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ accountNumber, amount }),
+        body: JSON.stringify({ accountNumber, amount,userId:userid }),
       }
     );
     let data = await response.json();
@@ -94,6 +97,7 @@ class AccountForm extends React.Component {
 
   handleTransfer = async () => {
     const { fromAccount, toAccount, amount } = this.state;
+    const userid = localStorage.getItem("user_id");
     const response = await fetch(
       "http://localhost:8080/api/v1/transactions/fund-transfer",
       {
@@ -101,7 +105,7 @@ class AccountForm extends React.Component {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ fromAccount, toAccount, amount }),
+        body: JSON.stringify({ fromAccount, toAccount, amount,userId:userid }),
       }
     );
     let data = await response.json();
@@ -135,11 +139,11 @@ class AccountForm extends React.Component {
   };
 
   handleAccountChange = (event) => {
-    this.setState({ accountNumber: event.target.value });
+    this.setState({ accountNumber: event });
   };
 
   handleFromAccountChange = (event) => {
-    this.setState({ fromAccount: event.target.value });
+    this.setState({ fromAccount: event });
   };
 
   handleToAccountChange = (event) => {
@@ -173,8 +177,8 @@ class AccountForm extends React.Component {
   };
 
   render() {
-    const { selectedType } = this.props;
-    const { errorMsg, accountNumber, successMsg, fromAccount, toAccount } =
+    const { selectedType, accounts } = this.props;
+    const { errorMsg, accountNumber, successMsg, toAccount, fromAccount } =
       this.state;
     const type = selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
     let transferFunds = true ? selectedType === "transfer" : false;
@@ -194,12 +198,40 @@ class AccountForm extends React.Component {
           <hr />
           <Form.Group controlId="accnt_no">
             <Form.Label>From Account number: </Form.Label>
-            <Form.Control
-              type="text"
-              placeholder={`Enter From Account Number`}
-              value={fromAccount}
-              onChange={this.handleFromAccountChange}
-            />
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                {fromAccount || 'Select an Account'}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {accounts.map((option) =>
+                  fromAccount !== "" ? (
+                    fromAccount === option.accountNumber ? (
+                      <Dropdown.Item
+                        eventKey={option.accountNumber}
+                        onSelect={this.handleFromAccountChange}
+                        active
+                      >
+                        {option.accountNumber}
+                      </Dropdown.Item>
+                    ) : (
+                      <Dropdown.Item
+                        eventKey={option.accountNumber}
+                        onSelect={this.handleFromAccountChange}
+                      >
+                        {option.accountNumber}
+                      </Dropdown.Item>
+                    )
+                  ) : (
+                    <Dropdown.Item
+                      eventKey={option.accountNumber}
+                      onSelect={this.handleFromAccountChange}
+                    >
+                      {option.accountNumber}
+                    </Dropdown.Item>
+                  )
+                )}
+              </Dropdown.Menu>
+            </Dropdown>
           </Form.Group>
           <Form.Group controlId="accnt_no">
             <Form.Label>To Account number: </Form.Label>
@@ -245,13 +277,40 @@ class AccountForm extends React.Component {
           <hr />
           <Form.Group controlId="accnt_no">
             <Form.Label>Account number: </Form.Label>
-            <Form.Control
-              type="text"
-              required
-              placeholder={`Enter Account Number`}
-              value={accountNumber}
-              onChange={this.handleAccountChange}
-            />
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                {accountNumber || 'Select an Account'}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {accounts.map((option) =>
+                  accountNumber !== "" ? (
+                    accountNumber === option.accountNumber ? (
+                      <Dropdown.Item
+                        eventKey={option.accountNumber}
+                        onSelect={this.handleAccountChange}
+                        active
+                      >
+                        {option.accountNumber}
+                      </Dropdown.Item>
+                    ) : (
+                      <Dropdown.Item
+                        eventKey={option.accountNumber}
+                        onSelect={this.handleAccountChange}
+                      >
+                        {option.accountNumber}
+                      </Dropdown.Item>
+                    )
+                  ) : (
+                    <Dropdown.Item
+                      eventKey={option.accountNumber}
+                      onSelect={this.handleAccountChange}
+                    >
+                      {option.accountNumber}
+                    </Dropdown.Item>
+                  )
+                )}
+              </Dropdown.Menu>
+            </Dropdown>
           </Form.Group>
           <Form.Group controlId="amount">
             <Form.Label>Amount:</Form.Label>

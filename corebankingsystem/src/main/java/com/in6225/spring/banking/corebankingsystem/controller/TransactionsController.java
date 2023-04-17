@@ -52,7 +52,8 @@ public class TransactionsController {
 	public ResponseEntity deposit(@RequestBody DepositRequest request){
 		String accountNumber = request.getAccountNumber();
 		BigDecimal amount = request.getAmount();
-        return ResponseEntity.ok(transervice.deposit(accountNumber,amount));
+		String userid = request.getUserId();
+        return ResponseEntity.ok(transervice.deposit(accountNumber,amount,userid));
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -60,7 +61,8 @@ public class TransactionsController {
 	public ResponseEntity withdraw(@RequestBody WithdrawRequest request){
 		String accountNumber = request.getAccountNumber();
 		BigDecimal amount = request.getAmount();
-        return ResponseEntity.ok(transervice.withdraw(accountNumber,amount));
+		String userid = request.getUserId();
+        return ResponseEntity.ok(transervice.withdraw(accountNumber,amount,userid));
 	}
 
 }
