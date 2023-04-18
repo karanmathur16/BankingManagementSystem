@@ -58,7 +58,7 @@ public class AccountsController {
 	
 	@SuppressWarnings("rawtypes")
 	@PostMapping("/create")
-	public ResponseEntity createUser(@RequestBody AccountCreationRequest accountrequest){
+	public ResponseEntity createAccount(@RequestBody AccountCreationRequest accountrequest){
 		AccountsDTO adto = new AccountsDTO();
 		adto.setAccountNumber(accountrequest.getAccountNumber());
 		System.out.println("accountNumber: " + accountrequest.getAccountNumber());
