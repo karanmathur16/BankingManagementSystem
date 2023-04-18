@@ -1,1 +1,70 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><umlet_diagram></umlet_diagram>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>0</x>
+      <y>10</y>
+      <w>580</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>com.in6225.spring.banking.corebankingsystem.controller::AccountsController
+--
+-accountservice: AccountsServiceImpl
+-userservice: UserServiceImpl
+-usermapper = new UserMapping(): UserMapping
+--
++getAccount(@PathVariable("accountNumber") String accountNumber): ResponseEntity
++getAllAccounts(): ResponseEntity
++getAllAccounts(@PathVariable("id") String idstr): ResponseEntity
++getStatement(@PathVariable("accountNumber") String accountNumber): ResponseEntity
++createAccount(@RequestBody AccountCreationRequest accountrequest): ResponseEntity
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>590</x>
+      <y>10</y>
+      <w>540</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>com.in6225.spring.banking.corebankingsystem.controller::TransactionsController
+--
+~transervice: TransactionServiceImpl
+~accountservice: AccountsServiceImpl
+--
++fundTransfer(@RequestBody FundsTransferRequest fundrequest): ResponseEntity
++getUser(@PathVariable("id") String idstr): ResponseEntity
++getUsers(@PathVariable("accountNumber") String accountNumber): ResponseEntity
++deposit(@RequestBody DepositRequest request): ResponseEntity
++withdraw(@RequestBody WithdrawRequest request): ResponseEntity
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>0</x>
+      <y>210</y>
+      <w>470</w>
+      <h>160</h>
+    </coordinates>
+    <panel_attributes>com.in6225.spring.banking.corebankingsystem.controller::UserController
+--
+-userservice: UserServiceImpl
+--
++getUser(@PathVariable("id") String idstr): ResponseEntity
++getUsers(): ResponseEntity
++createUser(@RequestBody Users user): ResponseEntity
++updateUser(@RequestBody Users user): ResponseEntity
++Login(@RequestBody LoginRequest request): ResponseEntity
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
